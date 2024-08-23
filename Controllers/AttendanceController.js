@@ -1,13 +1,15 @@
 import AttendanceModel from "../Modals/AttendanceModal.js";
+import AuthModel from "../Modals/AuthModal.js";
 
 export const onStartingAttendance = async (req, res) => {
-  const { date, startTime } = req.body;
+  const { date, startTime,emp_id } = req.body;
   const { user } = req;
   try {
     const doc = {
       name:user.name,
       date,
       startTime,
+      emp_id,
       head: user._id,
     };
 
@@ -53,18 +55,42 @@ export const onEndAttendance = async (req, res) => {
 export const onStateAttendance = async (req, res) => {
   const { user } = req;
   try {
+    const thisuser = await AuthModel.findOne({_id:user._id})
     const allAttendance = await AttendanceModel.find({ head: user._id }).sort({
       createdAt: -1
     });
-    if (!allAttendance) {
+    if (!allAttendance || !thisuser) {
       return res.status(404).json({ message: "Attendance not found" });
     }
-    res.status(200).json(allAttendance);
+    
+    
+    res.status(200).json({ success:true , attendance:allAttendance , details:{name:thisuser.name , id:thisuser.emp_id}});
+
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
+
+
+
+
+
+export const adminAttendance = async (req,res)=>{
+  try {
+    const allAttendance = await AttendanceModel.find().sort({
+      createdAt: -1
+    });
+  
+    return res.status(200).send({success:true , data:allAttendance})
+  } catch (error) {
+    return res.status(500).send({success:false , error:error.message})
+    
+  }
+}
+
+// !Required Funcitons to Format time
+
 
 const convertTo24HourFormat = (time12h) => {
   const [time, modifier] = time12h.split(' ');
@@ -103,9 +129,13 @@ const calculateTimeDifference = (startTime, endTime) => {
   return `${diffInHours}H : ${remainingMinutes}M`;
 };
 
-// Example usage:
-const startTime = "10:35 AM";
-const endTime = "01:20 PM";
 
-const timeDifference = calculateTimeDifference(startTime, endTime);
-console.log(`The difference is ${timeDifference}.`);
+export const onFetchAllStudents = async (req, res) => {
+  try {
+    const students = await AuthModel.find({})
+    return res.status(200).json(students)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message : "internal server errr", error})
+  }
+}

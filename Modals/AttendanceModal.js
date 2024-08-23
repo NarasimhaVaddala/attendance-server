@@ -24,6 +24,11 @@ const AttendanceSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Auth",
     },
+    emp_id:{
+      type:String,
+      required:true,
+    }
+   
   },
   { timestamps: true }
 );
