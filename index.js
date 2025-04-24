@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 const server = http.createServer(app);
 
 mongoose
-  .connect(`${process.env.MONGODB_URL}studentattndnce`)
+  .connect(`${process.env.MONGODB_URL}`)
   .then(() =>
     server.listen(process.env.PORT, () =>
       console.log(`Server listening on ${process.env.PORT} .....!`)

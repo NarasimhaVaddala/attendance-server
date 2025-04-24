@@ -20,6 +20,11 @@ const AuthSchema = new Schema(
       required: true,
       default:"Employee"
     },
+    mobile:{
+
+      type:String,
+      required: true,
+    },
     emp_id:{
       type:String,
       required:true,
